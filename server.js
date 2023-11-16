@@ -7,10 +7,24 @@ import pacienteRouter from "./routes/paciente.routes.js"
 
 const app = express()
 
-app.use(cors())
 dotenv.config()
 conexionDB()
 app.use(express.json())
+
+const whitelist = ["apv-frontend.pages.dev"]
+
+const corsOptions = {
+    origin: (origin, callback) => {
+        const isValid = whitelist.every(domain => origin.endsWith(domain))
+        if (isValid) {
+            callback(null, true)
+        } else {
+            callback(new Error("No permitido por CORS"))
+        }
+    },
+}
+
+app.use(cors(corsOptions))
 
 app.use("/vet", veterinarioRouter)
 app.use("/pac", pacienteRouter)
